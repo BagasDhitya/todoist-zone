@@ -1,13 +1,35 @@
 import { useState } from "react";
+
 import Layout from "../../components/Layout";
 import Card from "../../components/Card";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 import Input from "../../components/Input";
 
+type Task = {
+  id: number;
+  task: string;
+  date: string;
+};
+
 const Home = () => {
-  const [data, setData] = useState([]);
+  const [task, setTask] = useState("");
+  const [date, setDate] = useState("");
+  const [data, setData] = useState<Task[]>([]);
   const [show, setShow] = useState(false);
+
+  function addTask() {
+    const newTask: Task = {
+      ...data,
+      task: task,
+      date: date,
+      id: data.length + 1,
+    };
+    setData([...data, newTask]);
+    setShow(false);
+  }
+
+  console.log(data);
 
   return (
     <Layout>
@@ -23,14 +45,43 @@ const Home = () => {
           />
         </div>
         <div className="w-96 space-y-10">
-          <Card />
+          {data.length !== 0 ? (
+            data.map((item, index) => {
+              return (
+                <Card
+                  key={index}
+                  id={index}
+                  title={item.task}
+                  date={item.date}
+                />
+              );
+            })
+          ) : (
+            <div className="mt-20">
+              <p className="text-todoist-indigo text-center">
+                You don't have any tasks today, please click the Create Task
+                button to add tasks!
+              </p>
+            </div>
+          )}
         </div>
       </div>
       <Modal isOpen={show} onClose={() => setShow(false)}>
         <div className="m-5">
-          <Input label="Task Name" name="task" />
-          <Input label="Date" name="date" type="date" />
-          <Button id="add" title="Add" />
+          <Input
+            label="Task Name"
+            name="task"
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+          />
+          <Input
+            label="Date"
+            name="date"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+          <Button id="add" title="Add" onClick={() => addTask()} />
         </div>
       </Modal>
     </Layout>

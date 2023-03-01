@@ -3,7 +3,7 @@ import { IconContext } from "react-icons";
 import { BsPencilFill, BsTrash } from "react-icons/bs";
 
 interface CardProps {
-  id: string;
+  id: any;
   title?: string;
   date?: string;
   onUpdate?: React.MouseEventHandler;
