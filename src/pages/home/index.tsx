@@ -3,6 +3,7 @@ import Layout from "../../components/Layout";
 import Card from "../../components/Card";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
+import Input from "../../components/Input";
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -25,7 +26,13 @@ const Home = () => {
           <Card />
         </div>
       </div>
-      <Modal isOpen={show} onClose={() => setShow(false)} />
+      <Modal isOpen={show} onClose={() => setShow(false)}>
+        <div className="m-5">
+          <Input label="Task Name" name="task" />
+          <Input label="Date" name="date" type="date" />
+          <Button id="add" title="Add" />
+        </div>
+      </Modal>
     </Layout>
   );
 };
