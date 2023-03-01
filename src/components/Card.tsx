@@ -1,13 +1,15 @@
 import { FC } from "react";
+import { IconContext } from "react-icons";
+import { BsPencilFill, BsTrash } from "react-icons/bs";
 
 interface CardProps {
   id: string;
   title?: string;
-  value?: string;
-  onChange?: React.ChangeEventHandler;
+  onUpdate?: React.MouseEventHandler;
+  onDelete?: React.MouseEventHandler;
 }
 
-const Card: FC<CardProps> = ({ id, title, value, onChange }) => {
+const Card: FC<CardProps> = ({ id, title, onUpdate, onDelete }) => {
   return (
     <div
       id={id}
@@ -16,13 +18,11 @@ const Card: FC<CardProps> = ({ id, title, value, onChange }) => {
       <div className="grid content-center">
         <p className="font-semibold text-xl text-todoist-indigo m-5">{title}</p>
       </div>
-      <div className="m-6">
-        <input
-          className="w-5 h-5"
-          type="radio"
-          value={value}
-          onChange={onChange}
-        />
+      <div className="m-6 flex flex-row space-x-3">
+        <IconContext.Provider value={{ color: "#4445C4" }}>
+          <BsPencilFill onClick={onUpdate} />
+          <BsTrash onClick={onDelete} />
+        </IconContext.Provider>
       </div>
     </div>
   );
