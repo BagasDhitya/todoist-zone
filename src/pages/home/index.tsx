@@ -5,6 +5,8 @@ import Card from "../../components/Card";
 import Button from "../../components/Button";
 import Modal from "../../components/Modal";
 import Input from "../../components/Input";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 type Task = {
   id: number;
@@ -19,17 +21,54 @@ const Home = () => {
   const [show, setShow] = useState(false);
 
   function addTask() {
-    const newTask: Task = {
-      ...data,
-      task: task,
-      date: date,
-      id: data.length + 1,
-    };
-    setData([...data, newTask]);
-    setShow(false);
+    axios
+      .post(
+        `https://api.todoist.com/rest/v2/tasks`,
+        {
+          content: task,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_TODOIST_KEY}`,
+          },
+        }
+      )
+      .then((response) => {
+        const newTask: Task = {
+          ...data,
+          task: response.data?.content,
+          date: response.data?.created_at,
+          id: response.data?.id?.length + 1,
+        };
+        data.push(newTask);
+        Swal.fire({
+          title: "Success!",
+          text: "Success added a new task",
+          confirmButtonText: "OK",
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          title: "Failed!",
+          text: error,
+          confirmButtonText: "OK",
+        });
+      });
   }
 
-  console.log(data);
+  function updateTask(id: number, newTask: Task) {
+    setShow(true);
+    const updatedTasks = data.map((item) => {
+      if (item.id === id) {
+        return { ...newTask, id };
+      }
+      return item;
+    });
+    setData(updatedTasks);
+  }
+
+  console.log("data :", data);
 
   return (
     <Layout>
@@ -53,6 +92,7 @@ const Home = () => {
                   id={index}
                   title={item.task}
                   date={item.date}
+                  onUpdate={() => updateTask(item.id, item)}
                 />
               );
             })
