@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Layout from "../../components/Layout";
 import Card from "../../components/Card";
@@ -17,8 +17,10 @@ type Task = {
 const Home = () => {
   const [task, setTask] = useState("");
   const [date, setDate] = useState("");
+  const [id, setId] = useState(0);
   const [data, setData] = useState<Task[]>([]);
-  const [show, setShow] = useState(false);
+  const [modalCreate, setModalCreate] = useState(false);
+  const [modalUpdate, setModalUpdate] = useState(false);
 
   function addTask() {
     axios
@@ -39,7 +41,7 @@ const Home = () => {
           ...data,
           task: response.data?.content,
           date: response.data?.created_at,
-          id: response.data?.id?.length + 1,
+          id: response.data?.id + 1,
         };
         data.push(newTask);
         Swal.fire({
@@ -57,18 +59,22 @@ const Home = () => {
       });
   }
 
-  function updateTask(id: number, newTask: Task) {
-    setShow(true);
+  function handleId(id: number) {
+    setId(id);
+    setModalUpdate(true);
+  }
+
+  function updateTask() {
+    console.log("id : ", id);
+    setModalUpdate(true);
     const updatedTasks = data.map((item) => {
       if (item.id === id) {
-        return { ...newTask, id };
+        return { ...item, id };
       }
       return item;
     });
     setData(updatedTasks);
   }
-
-  console.log("data :", data);
 
   return (
     <Layout>
@@ -80,7 +86,7 @@ const Home = () => {
           <Button
             id="create-task"
             title="Create Task"
-            onClick={() => setShow(true)}
+            onClick={() => setModalCreate(true)}
           />
         </div>
         <div className="w-96 space-y-10">
@@ -92,7 +98,7 @@ const Home = () => {
                   id={index}
                   title={item.task}
                   date={item.date}
-                  onUpdate={() => updateTask(item.id, item)}
+                  onUpdate={() => handleId(item.id)}
                 />
               );
             })
@@ -106,7 +112,7 @@ const Home = () => {
           )}
         </div>
       </div>
-      <Modal isOpen={show} onClose={() => setShow(false)}>
+      <Modal isOpen={modalCreate} onClose={() => setModalCreate(false)}>
         <div className="m-5">
           <Input
             label="Task Name"
@@ -122,6 +128,24 @@ const Home = () => {
             onChange={(e) => setDate(e.target.value)}
           />
           <Button id="add" title="Add" onClick={() => addTask()} />
+        </div>
+      </Modal>
+      <Modal isOpen={modalUpdate} onClose={() => setModalUpdate(false)}>
+        <div className="m-5">
+          <Input
+            label="Task Name"
+            name="task"
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+          />
+          <Input
+            label="Date"
+            name="date"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+          <Button id="add" title="Edit" onClick={() => updateTask()} />
         </div>
       </Modal>
     </Layout>
